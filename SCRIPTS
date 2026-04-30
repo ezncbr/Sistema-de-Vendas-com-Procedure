@@ -1,0 +1,33 @@
+    --  Verificar se o produto existe
+    SELECT preco, estoque
+      INTO v_preco, v_estoque
+      FROM produtos
+     WHERE id = p_produto_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Produto com id % não encontrado.', p_produto_id;
+    END IF;
+
+    --  Verificar estoque suficiente
+    IF v_estoque < p_quantidade THEN
+        RAISE EXCEPTION
+            'Estoque insuficiente para o produto id %. Disponível: %, Solicitado: %.',
+            p_produto_id, v_estoque, p_quantidade;
+    END IF;
+
+    --  Calcular valor total
+    v_valor_total := v_preco * p_quantidade;
+
+    --  Registrar a venda
+    INSERT INTO vendas (produto_id, quantidade, valor_total)
+    VALUES (p_produto_id, p_quantidade, v_valor_total);
+
+    --  Atualizar o estoque
+    UPDATE produtos
+       SET estoque = estoque - p_quantidade
+     WHERE id = p_produto_id;
+
+    RAISE NOTICE 'Venda realizada! Produto id: % | Qtd: % | Total: R$ %',
+        p_produto_id, p_quantidade, v_valor_total;
+END;
+$$;
