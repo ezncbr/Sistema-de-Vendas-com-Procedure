@@ -1,0 +1,11 @@
+CREATE OR REPLACE PROCEDURE realizar_venda(
+    p_produto_id  INTEGER,
+    p_quantidade  INTEGER
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_preco       NUMERIC(10,2);
+    v_estoque     INTEGER;
+    v_valor_total NUMERIC(10,2);
+BEGIN
